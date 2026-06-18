@@ -6,15 +6,6 @@ without editing source.
 """
 import os
 
-
-def _flag(name: str, default: bool) -> bool:
-    """Read a boolean-ish environment variable."""
-    raw = os.environ.get(name)
-    if raw is None:
-        return default
-    return raw.strip().lower() in ("1", "true", "yes", "on")
-
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONTENT_DIR = os.environ.get("CONTENT_DIR", os.path.join(BASE_DIR, "content"))
 MAPPING_FILE = os.environ.get(
@@ -52,17 +43,18 @@ IDLE_IMAGE = os.environ.get("IDLE_IMAGE", os.path.join(CONTENT_DIR, "idle.png"))
 # commands on every single scan — only if we haven't sent them recently.
 CEC_RESEND_SECONDS = int(os.environ.get("CEC_RESEND_SECONDS", "30"))
 
-# --- Local feedback LED (optional hardware) -----------------------------
+# --- Local feedback LED (required hardware) ------------------------------
 # A single LED wired to a GPIO pin gives the child instant confirmation that
-# a scan/tap registered, even before the TV wakes up. BCM pin numbering.
-LED_ENABLED = _flag("LED_ENABLED", True)
+# a scan/tap registered, even before the TV wakes up. This is a core part of
+# the appliance: if it can't be initialized the hub refuses to start. Only
+# the pin (BCM numbering) is configurable.
 LED_PIN = int(os.environ.get("LED_PIN", "17"))
 
-# --- Safe shutdown / power resilience (optional hardware) ---------------
+# --- Safe shutdown / power resilience (required hardware) ----------------
 # A momentary push button wired between this GPIO and ground. Holding it
 # triggers a clean shutdown so the SD card / storage isn't corrupted by
 # yanking power. GPIO3 is special on the Pi: a press can also wake the board
-# back up from halt, making it a natural soft power button.
-POWER_BUTTON_ENABLED = _flag("POWER_BUTTON_ENABLED", True)
+# back up from halt, making it a natural soft power button. Also a core part
+# of the appliance — the hub refuses to start if it can't be initialized.
 POWER_BUTTON_PIN = int(os.environ.get("POWER_BUTTON_PIN", "3"))
 POWER_BUTTON_HOLD_SECONDS = float(os.environ.get("POWER_BUTTON_HOLD_SECONDS", "2"))

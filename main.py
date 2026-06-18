@@ -6,10 +6,19 @@ single playback worker. The worker serializes everything, so a QR scan and an
 NFC tap can never fight over the screen: it acknowledges the scan on the LED,
 wakes the TV (only if needed), plays the mapped content, and returns to the
 idle screen when playback finishes.
+
+The feedback LED and the safe-shutdown power button are required hardware: if
+either fails to initialize, the hub refuses to start.
+
+Usage:
+    python main.py              # run the hub
+    python main.py --selftest   # probe hardware/config and print a report
 """
+import argparse
 import logging
 import queue
 import signal
+import sys
 import threading
 
 from src import player, tv_control
@@ -23,7 +32,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("hub")
 
 mapper = ContentMapper()
-feedback = Feedback()
+feedback = None  # required hardware, created in main()
 _play_queue: "queue.Queue" = queue.Queue()
 _stop_event = threading.Event()
 
@@ -82,16 +91,29 @@ def _playback_worker():
         _process(action)
 
 
-def main():
+def run_hub():
+    global feedback
+    try:
+        feedback = Feedback()
+        power_button = PowerButton()
+        power_button.start()
+    except Exception as exc:
+        logger.error(
+            "Required hardware failed to initialize (%s). The feedback LED and "
+            "power button are mandatory — check the wiring and that the service "
+            "user is in the 'gpio' group. Run 'python main.py --selftest' to "
+            "diagnose.",
+            exc,
+        )
+        return 1
+
     worker = threading.Thread(target=_playback_worker, daemon=True)
     qr_thread = QRListener(on_scan=handle_qr)
     nfc_thread = NFCListener(on_scan=handle_nfc)
-    power_button = PowerButton()
 
     worker.start()
     qr_thread.start()
     nfc_thread.start()
-    power_button.start()
 
     def shutdown(*_):
         logger.info("Shutting down.")
@@ -106,7 +128,24 @@ def main():
 
     logger.info("Hub running. Waiting for QR scans and NFC taps... (Ctrl+C to stop)")
     _stop_event.wait()
+    return 0
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="PixelPostman media hub")
+    parser.add_argument(
+        "--selftest",
+        action="store_true",
+        help="probe hardware and configuration, print a report, and exit",
+    )
+    args = parser.parse_args(argv)
+
+    if args.selftest:
+        from src.selftest import run_selftest
+
+        return 0 if run_selftest() else 1
+    return run_hub()
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

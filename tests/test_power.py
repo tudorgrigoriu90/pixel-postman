@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock
 
+import pytest
+
 from src import power
 from src.power import PowerButton
 
@@ -19,7 +21,8 @@ def test_injected_button_wires_hold_handler():
     assert button.when_held is handler
 
 
-def test_disabled_without_button_is_noop():
-    pb = PowerButton(enabled=False)
-    pb.start()   # no hardware, must not raise
-    pb.close()
+def test_missing_hardware_raises():
+    # The power button is mandatory: with no usable GPIO backend, start()
+    # must fail loudly rather than silently no-op.
+    with pytest.raises(Exception):
+        PowerButton().start()

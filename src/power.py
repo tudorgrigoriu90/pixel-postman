@@ -1,4 +1,4 @@
-"""Safe shutdown / power resilience.
+"""Safe shutdown / power resilience (a required part of the appliance).
 
 This appliance lives where a child (or a tired parent) will pull the power at
 the wall. Unclean shutdowns are the number-one cause of SD-card / storage
@@ -9,8 +9,10 @@ Pair this with a read-only / overlay root filesystem (see README and
 scripts/install.sh) for full resilience — that protects against the power
 *still* being yanked despite the button.
 
-``gpiozero`` is imported lazily so the rest of the hub (and the test suite)
-runs fine on machines without GPIO.
+The power button is mandatory: if the GPIO library or pin can't be
+initialized, ``start()`` raises so the hub fails fast. ``gpiozero`` is
+imported lazily, and a ``button`` can be injected for unit tests, so this
+module still imports cleanly off-Pi.
 """
 import logging
 import subprocess
@@ -35,37 +37,26 @@ class PowerButton:
     def __init__(
         self,
         pin=config.POWER_BUTTON_PIN,
-        enabled=config.POWER_BUTTON_ENABLED,
         hold_seconds=config.POWER_BUTTON_HOLD_SECONDS,
         on_hold=default_shutdown,
         button=None,
     ):
         self.pin = pin
-        self.enabled = enabled
         self.hold_seconds = hold_seconds
         self.on_hold = on_hold
         self._button = button
 
     def start(self):
-        if self._button is not None:
-            self._button.when_held = self.on_hold
-            return
-        if not self.enabled:
-            return
-        try:
+        if self._button is None:
             from gpiozero import Button
 
             self._button = Button(self.pin, hold_time=self.hold_seconds)
-            self._button.when_held = self.on_hold
             logger.info(
                 "Power button enabled on GPIO%s (hold %.1fs to shut down).",
                 self.pin,
                 self.hold_seconds,
             )
-        except Exception as exc:  # pragma: no cover - hardware/driver specific
-            logger.warning(
-                "Power button unavailable (%s); continuing without it.", exc
-            )
+        self._button.when_held = self.on_hold
 
     def close(self):
         if self._button is not None:
