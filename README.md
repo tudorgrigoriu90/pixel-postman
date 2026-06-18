@@ -44,32 +44,39 @@ Please load only content you own or are licensed to use.
 
 Approximate prices are rough and vary by region — treat them as ballpark only.
 
+> **About the links:** the AliExpress links below are **search links**, not
+> single listings — individual AliExpress listings come and go, but a search
+> always lands you on the right type of part. Always check the seller's rating
+> and reviews before buying. Where a known-good "buy exactly this" page exists
+> (the Raspberry Pi itself, the Adafruit PN532), the official link is given
+> too. Any equivalent local electronics shop / Amazon part works just as well.
+
 ### Core (required)
 
-| # | Part | Notes |
-|---|------|-------|
-| 1 | **Raspberry Pi 4** (2GB is plenty, 4GB fine) | The brain. A Pi 400/Pi 5 also work with minor tweaks. |
-| 1 | **Official USB-C power supply** (5V / 3A) | Underpowered supplies cause random flakiness — don't skip this. |
-| 1 | **microSD card**, 32GB+ (A1/A2, reputable brand) | Holds the OS and your media. |
-| 1 | **micro-HDMI → HDMI cable** | The Pi 4 uses *micro*-HDMI, not full-size. |
-| 1 | **Raspberry Pi 4 case** | Any case; one with GPIO access is handy. |
-| 1 | **USB HID barcode / QR scanner** | Any "keyboard-emulation" (HID) USB scanner. These just "type" the code. |
-| 1 | **PN532 NFC reader module** (I2C-capable) | The common red "PN532 NFC V3" boards work great. |
-| 1 pack | **NTAG213 or NTAG215 NFC stickers** | One per postcard. |
-| 1 | **5mm LED** (any colour) | Scan/playback feedback light. |
-| 1 | **330Ω resistor** | In series with the LED. |
-| 1 | **Momentary push button** (tactile switch) | Soft power / clean-shutdown button. |
-| ~8 | **Female-to-female jumper wires** ("Dupont") | To connect the PN532, LED and button to the GPIO header. |
-| 1 | **TV with HDMI-CEC** | Almost all modern TVs. (CEC marketing names: Anynet+, Bravia Sync, SimpLink, etc.) |
+| # | Part | Where to buy (example) | Notes |
+|---|------|------------------------|-------|
+| 1 | **Raspberry Pi 4** (2GB is plenty, 4GB fine) | [Official](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/) · [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=raspberry+pi+4+model+b) | The brain. A Pi 400/Pi 5 also work with minor tweaks. |
+| 1 | **Official USB-C power supply** (5V / 3A) | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=raspberry+pi+4+power+supply+5v+3a+usb+c) | Underpowered supplies cause random flakiness — don't skip this. |
+| 1 | **microSD card**, 32GB+ (A1/A2, reputable brand) | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=sandisk+microsd+32gb+a1) | Holds the OS and your media. |
+| 1 | **micro-HDMI → HDMI cable** | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=micro+hdmi+to+hdmi+cable) | The Pi 4 uses *micro*-HDMI, not full-size. |
+| 1 | **Raspberry Pi 4 case** | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=raspberry+pi+4+case) | Any case; one with GPIO access is handy. |
+| 1 | **USB HID barcode / QR scanner** | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=usb+qr+code+barcode+scanner) | Any "keyboard-emulation" (HID) USB scanner. These just "type" the code. |
+| 1 | **PN532 NFC reader module** (I2C-capable) | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=pn532+nfc+module) · [Adafruit (premium)](https://www.adafruit.com/product/364) | The common red "PN532 NFC V3" boards work great. |
+| 1 pack | **NTAG213 or NTAG215 NFC stickers** | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=ntag215+nfc+sticker) | One per postcard. |
+| 1 | **5mm LED** (any colour) | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=5mm+led+assortment+kit) | Scan/playback feedback light. |
+| 1 | **330Ω resistor** | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=resistor+kit+1%2F4w) | In series with the LED (a resistor kit is handy). |
+| 1 | **Momentary push button** (tactile switch) | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=momentary+push+button+tactile+switch) | Soft power / clean-shutdown button. |
+| ~8 | **Female-to-female jumper wires** ("Dupont") | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=dupont+jumper+wires+female+to+female) | To connect the PN532, LED and button to the GPIO header. |
+| 1 | **TV with HDMI-CEC** | — | Almost all modern TVs. (CEC marketing names: Anynet+, Bravia Sync, SimpLink, etc.) |
 
 ### Optional but recommended
 
-| Part | Why |
-|------|-----|
-| **USB SSD + USB3 adapter** | Store media off the SD card — faster and far more durable for lots of video. |
-| **Small solderless breadboard** *or* perfboard | Tidy home for the LED + resistor + button. No soldering needed with a breadboard. |
-| **A physical book + a printer** | Print QR codes (any printer) and stick/print them on book pages. |
-| **Smart plug + IR blaster** (e.g. Broadlink) | Fallback to power the TV on if its HDMI-CEC is unreliable. |
+| Part | Where to buy (example) | Why |
+|------|------------------------|-----|
+| **USB SSD + USB3 adapter** | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=usb+3.0+to+sata+ssd+adapter) | Store media off the SD card — faster and far more durable for lots of video. |
+| **Small solderless breadboard** *or* perfboard | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=solderless+breadboard) | Tidy home for the LED + resistor + button. No soldering needed with a breadboard. |
+| **A physical book + a printer** | — | Print QR codes (any printer) and stick/print them on book pages. |
+| **Smart plug + IR blaster** (e.g. Broadlink) | [AliExpress search](https://www.aliexpress.com/wholesale?SearchText=broadlink+ir+blaster) | Fallback to power the TV on if its HDMI-CEC is unreliable. |
 
 You'll also need, for the build itself: a computer to flash the SD card, and
 (if you choose perfboard over a breadboard) a soldering iron.
