@@ -1,4 +1,4 @@
-# PixelPostman
+# Pixel Postman
 
 **A free, DIY, build-it-yourself media hub for a young child — powered by a
 single Raspberry Pi.**
