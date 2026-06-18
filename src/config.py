@@ -53,8 +53,9 @@ LED_PIN = int(os.environ.get("LED_PIN", "17"))
 # --- Safe shutdown / power resilience (required hardware) ----------------
 # A momentary push button wired between this GPIO and ground. Holding it
 # triggers a clean shutdown so the SD card / storage isn't corrupted by
-# yanking power. GPIO3 is special on the Pi: a press can also wake the board
-# back up from halt, making it a natural soft power button. Also a core part
-# of the appliance — the hub refuses to start if it can't be initialized.
-POWER_BUTTON_PIN = int(os.environ.get("POWER_BUTTON_PIN", "3"))
+# yanking power. We default to GPIO26 (a free pin) rather than GPIO3, because
+# GPIO3 doubles as I2C1 SCL and is therefore already in use by the PN532 NFC
+# reader. Also a core part of the appliance — the hub refuses to start if it
+# can't be initialized.
+POWER_BUTTON_PIN = int(os.environ.get("POWER_BUTTON_PIN", "26"))
 POWER_BUTTON_HOLD_SECONDS = float(os.environ.get("POWER_BUTTON_HOLD_SECONDS", "2"))

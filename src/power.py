@@ -5,6 +5,11 @@ the wall. Unclean shutdowns are the number-one cause of SD-card / storage
 corruption on a Raspberry Pi, so we give it a soft power button: hold the
 button for a couple of seconds and the Pi shuts down cleanly.
 
+The button defaults to GPIO26 rather than the "classic" GPIO3 power-button
+pin, because GPIO3 doubles as I2C1 SCL and is already used by the PN532 NFC
+reader. (Tradeoff: GPIO3 can wake the Pi from halt; GPIO26 cannot, so after a
+shutdown you power back on by briefly reconnecting the supply.)
+
 Pair this with a read-only / overlay root filesystem (see README and
 scripts/install.sh) for full resilience — that protects against the power
 *still* being yanked despite the button.
