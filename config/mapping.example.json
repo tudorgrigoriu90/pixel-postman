@@ -1,0 +1,17 @@
+{
+  "qr": {
+    "BOOK-PAGE-01": { "type": "video", "path": "stories/page01.mp4" },
+    "BOOK-PAGE-02": { "type": "video", "path": "stories/page02.mp4" }
+  },
+  "nfc": {
+    "04A3B2C1": {
+      "type": "slideshow",
+      "folder": "trips/venice",
+      "video": "trips/venice/clip.mp4"
+    },
+    "04D5E6F7": {
+      "type": "slideshow",
+      "folder": "trips/brasov"
+    }
+  }
+}

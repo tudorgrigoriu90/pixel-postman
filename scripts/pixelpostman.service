@@ -1,0 +1,14 @@
+[Unit]
+Description=PixelPostman - QR interactive book + NFC travel postcards
+After=network.target sound.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/pi/pixelpostman
+ExecStart=/home/pi/pixelpostman/venv/bin/python main.py
+Restart=on-failure
+RestartSec=3
+User=pi
+
+[Install]
+WantedBy=multi-user.target

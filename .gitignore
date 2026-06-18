@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+
+# Real media (photos/videos) and the real mapping stay local —
+# only the example mapping is tracked in git.
+content/*
+!content/.gitkeep
+config/mapping.json
