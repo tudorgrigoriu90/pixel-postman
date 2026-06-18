@@ -1,3 +1,4 @@
 evdev
 adafruit-blinka
 adafruit-circuitpython-pn532
+gpiozero

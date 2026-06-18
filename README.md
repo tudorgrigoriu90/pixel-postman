@@ -71,7 +71,17 @@ parent recorded or selected ahead of time.
   powered on manually.
 - **Playback**: `player.py` uses `mpv` to play videos fullscreen, or to run
   a photo slideshow (each image shown for a few seconds) optionally followed
-  by a closing video clip.
+  by a closing video clip. All playback is serialized through a single
+  worker, so a QR scan and an NFC tap can never start two players at once.
+- **Idle screen**: whenever nothing is playing, a looping `content/idle.png`
+  (if present) is shown so the child never sees a Linux console. Playback
+  returns to it automatically when a video or slideshow finishes.
+- **Local feedback LED**: an optional LED on a GPIO pin blinks to confirm a
+  scan/tap, stays lit while content plays, and flashes rapidly on an unknown
+  code or missing file — instant feedback before the TV even wakes up.
+- **Safe shutdown**: an optional momentary push button on a GPIO pin
+  triggers a clean OS shutdown when held, protecting the storage from
+  corruption caused by yanking the power.
 
 ## Repository structure
 
@@ -82,15 +92,19 @@ pixelpostman/
 ├── src/
 │   ├── config.py                 # paths and tunable settings
 │   ├── content_mapper.py         # reads mapping.json, resolves actions
-│   ├── player.py                 # mpv wrapper (video + slideshow)
+│   ├── player.py                 # mpv wrapper (video + slideshow + idle)
 │   ├── tv_control.py             # HDMI-CEC wrapper
 │   ├── qr_listener.py            # reads the HID barcode scanner
-│   └── nfc_listener.py           # reads the PN532 NFC reader
+│   ├── nfc_listener.py           # reads the PN532 NFC reader
+│   ├── feedback.py               # LED feedback (optional GPIO)
+│   └── power.py                  # safe-shutdown power button (optional GPIO)
 ├── config/
 │   └── mapping.example.json      # template — copy to mapping.json and edit
 ├── scripts/
 │   ├── install.sh                # one-time setup on the Pi
 │   └── pixelpostman.service       # systemd unit for auto-start on boot
+├── tests/                        # unit tests (run on a dev machine / CI)
+├── .github/workflows/ci.yml      # CI: lint + tests on push / PR
 └── content/                      # your actual photos/videos go here (not tracked in git)
 ```
 
@@ -107,6 +121,12 @@ specific to each setup, not something to publish.
 - NFC stickers (NTAG213/215) for the back of each postcard
 - A TV with HDMI-CEC support (most modern TVs); if CEC is unreliable, a
   smart plug + IR blaster can be used as a fallback for power-on
+- **(Optional) Feedback LED** + ~330Ω resistor, on GPIO17 by default
+  (anode → resistor → GPIO17, cathode → GND). Configurable via `LED_PIN`.
+- **(Optional) Soft power button** — a momentary push button between GPIO3
+  and GND by default. GPIO3 is special: a press also wakes the Pi from
+  halt, so the same button powers the appliance back on. Configurable via
+  `POWER_BUTTON_PIN`.
 
 ## Setup
 
@@ -146,6 +166,62 @@ specific to each setup, not something to publish.
   do this — you only need the UID, not the content written on the tag
   itself), find its UID by scanning it once and checking the hub's logs,
   add an entry to `mapping.json`, and put the photos/clip in `content/`.
+
+## Local feedback & power resilience
+
+These are optional hardware add-ons, but recommended for an appliance a young
+child operates unattended. Both degrade gracefully: if the hardware isn't
+fitted (or the GPIO library is unavailable), the hub logs a warning and runs
+exactly as before.
+
+### Feedback LED (requirement)
+
+The child must get immediate confirmation that a scan/tap registered, *before*
+the TV finishes waking over HDMI-CEC. A single LED on a GPIO pin provides it:
+
+| State | LED behaviour |
+| --- | --- |
+| Idle / ready | off |
+| Scan/tap acknowledged | two quick blinks |
+| Content playing | steady on |
+| Unknown code / missing media | rapid burst of blinks |
+
+Wire the LED (with a ~330Ω series resistor) to `LED_PIN` (GPIO17 by default).
+Disable it entirely with `LED_ENABLED=false`.
+
+### Safe shutdown (requirement)
+
+The appliance will be unplugged at the wall, and unclean shutdowns are the
+number-one cause of SD-card corruption on a Raspberry Pi. Two layers protect
+against this:
+
+1. **Soft power button** — a momentary push button on `POWER_BUTTON_PIN`
+   (GPIO3 by default). Hold it for ~2s and the Pi shuts down cleanly; because
+   GPIO3 also wakes the Pi from halt, the same button powers it back on. The
+   install script adds a passwordless `sudo shutdown` rule so this works
+   without running the hub as root. Disable with `POWER_BUTTON_ENABLED=false`.
+2. **Read-only / overlay root filesystem** — enable via
+   `sudo raspi-config` → *Performance* → *Overlay File System*. With the root
+   filesystem read-only, even a hard power cut can't corrupt the OS. Keep
+   `content/` (and `config/mapping.json`) on a writable partition or USB SSD
+   if you need to update media in place.
+
+The hub also handles `SIGTERM`/`SIGINT` (so `systemctl stop` and Ctrl+C) by
+stopping mpv and releasing the GPIO cleanly.
+
+## Development & tests
+
+The Raspberry Pi hardware libraries are imported lazily, so the code can be
+imported and unit-tested on any machine — no Pi required:
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+Continuous integration (`.github/workflows/ci.yml`) runs the linter and the
+full test suite on every push and pull request to `main`, across Python 3.9
+and 3.11 (matching Raspberry Pi OS).
 
 ## Notes on reliability
 

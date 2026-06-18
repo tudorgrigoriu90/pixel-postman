@@ -1,0 +1,4 @@
+# Test/CI dependencies. The hardware libraries in requirements.txt are
+# imported lazily, so the unit tests run without a Raspberry Pi attached.
+pytest
+ruff

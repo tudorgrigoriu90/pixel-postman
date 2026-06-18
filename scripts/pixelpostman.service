@@ -4,11 +4,13 @@ After=network.target sound.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/pi/pixelpostman
-ExecStart=/home/pi/pixelpostman/venv/bin/python main.py
+WorkingDirectory=@REPO_DIR@
+ExecStart=@REPO_DIR@/venv/bin/python main.py
 Restart=on-failure
 RestartSec=3
-User=pi
+User=@USER@
+# Grant access to the scanner, NFC reader, HDMI-CEC and GPIO without root.
+SupplementaryGroups=input i2c video gpio
 
 [Install]
 WantedBy=multi-user.target
